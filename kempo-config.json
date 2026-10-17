@@ -1,4 +1,44 @@
 {
   "docs": "https://github.com/dustinpoissant/kempo-discounts#readme",
-  "git": "https://github.com/dustinpoissant/kempo-discounts"
+  "git": "https://github.com/dustinpoissant/kempo-discounts",
+  "public-scope": "discounts",
+  "schema": "./server/db/schema.js",
+  "dependencies": [
+    "kempo-products",
+    "kempo-commerce"
+  ],
+  "hooks": {
+    "kempo-commerce:totals:discounts": "./hooks/totals-discounts.js",
+    "kempo-commerce:order:paid": "./hooks/order-paid.js",
+    "kempo-commerce:refund:issued": "./hooks/refund-issued.js"
+  },
+  "permissions": [
+    {
+      "name": "discounts:view",
+      "description": "See the sales, and what each has saved customers"
+    },
+    {
+      "name": "discounts:manage",
+      "description": "Create, change, pause and delete sales, and add products and categories to them"
+    }
+  ],
+  "groups": [
+    {
+      "name": "kempo-discounts:viewer",
+      "description": "Can see the sales and their results, but not change them",
+      "permissions": [
+        "system:admin:access",
+        "discounts:view"
+      ]
+    },
+    {
+      "name": "kempo-discounts:manager",
+      "description": "Can run sales: create, change, pause and delete them",
+      "permissions": [
+        "system:admin:access",
+        "discounts:view",
+        "discounts:manage"
+      ]
+    }
+  ]
 }

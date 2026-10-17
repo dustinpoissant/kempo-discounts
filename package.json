@@ -1,0 +1,24 @@
+{
+  "name": "kempo-discounts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Coming soon: time-limited price reductions on products, with start and end dates.",
+  "license": "MIT",
+  "author": "Dustin Poissant",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "files": [
+    "admin",
+    "kempo-config.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dustinpoissant/kempo-discounts.git"
+  },
+  "peerDependencies": {
+    "kempo": ">=4.7.0",
+    "kempo-ui": ">=0.5.2"
+  }
+}

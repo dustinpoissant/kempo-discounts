@@ -215,7 +215,7 @@ export default class SaleForm extends ShadowComponent {
       </div>
       <p class="tc-muted mb">${exampleText(draft.kind, draft.value, config)}</p>
       <label class="checkbox d-b mbq"><input type="checkbox" id="stackable" .checked=${draft.stackable} @change=${event => this.set({ stackable: event.target.checked })}> Can be combined with other discounts</label>
-      <p class="tc-muted small mb">Off by default. Sales and codes that can be combined add up (amounts come off first, then the percents are added up and taken off what is left); one that cannot be combined applies alone, and the customer gets whichever saves more. A product's minimum price is never broken.</p>
+      <p class="tc-muted mb">Off by default. Sales and codes that can be combined add up (amounts come off first, then the percents are added up and taken off what is left); one that cannot be combined applies alone, and the customer gets whichever saves more. A product's minimum price is never broken.</p>
 
       <h4>Applies to</h4>
       <label class="checkbox d-b mb"><input type="checkbox" id="allProducts" .checked=${draft.allProducts} @change=${event => this.set({ allProducts: event.target.checked })}> Every product</label>

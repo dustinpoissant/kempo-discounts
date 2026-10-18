@@ -9,7 +9,7 @@ It needs **kempo-products** (the catalog) and **kempo-commerce** (the cart and o
 A sale is its own thing that products are added to, the Etsy way, not a field on every product. It has:
 
 - **What it takes off**: a percent (1 to 100), or a fixed amount off each one, in the catalog's currency.
-- **What it applies to**: every product, or a mix of individual products, whole **categories** (including products added to them later) and product **types**. Credit packs are never discounted.
+- **What it applies to**: every product, or a mix of individual products, whole **categories** (including products added to them later) and product **types**. A credit pack is a product like any other, so a sale discounts it when it covers it.
 - **When**: an optional start and end (in your own time zone). Blank is "as soon as it is saved" and "until you stop it".
 - **Can be combined**, off by default (see below).
 - **Paused**, to stop it without deleting it.

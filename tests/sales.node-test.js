@@ -90,7 +90,7 @@ export default {
     pass('');
   },
 
-  'a sale covers the whole catalog, listed products, categories and types, and never a credit pack': async ({ pass, fail }) => {
+  'a sale covers the whole catalog, listed products, categories and types, and a credit pack like any other product': async ({ pass, fail }) => {
     const category = await makeCategory('Model cars');
     const car = await makeProduct({ categories: [category.key] });
     const other = await makeProduct();
@@ -100,7 +100,10 @@ export default {
     if(!covers({ allProducts: false, targets: [{ type: 'product', key: car.id }] }, car) || covers({ allProducts: false, targets: [{ type: 'product', key: car.id }] }, other)) return fail('a listed product');
     if(!covers({ allProducts: false, targets: [{ type: 'category', key: category.key }] }, car) || covers({ allProducts: false, targets: [{ type: 'category', key: category.key }] }, other)) return fail('a category');
     if(!covers({ allProducts: false, targets: [{ type: 'type', key: 'vehicle' }] }, { ...car, type: 'vehicle' })) return fail('a type');
-    if(covers(everything, { ...pack, creditsOnly: true })) return fail('credit packs are never discounted');
+    const credits = { ...pack, creditsOnly: true };
+    if(!covers(everything, credits)) return fail('every product includes credit packs');
+    if(!covers({ allProducts: false, targets: [{ type: 'product', key: credits.id }] }, credits)) return fail('a credit pack that is named is discounted');
+    if(covers({ allProducts: false, targets: [{ type: 'product', key: car.id }] }, credits)) return fail('a credit pack that is not named is not');
     if(covers({ allProducts: false, targets: [] }, car)) return fail('an empty sale covers nothing');
     pass('');
   },

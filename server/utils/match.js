@@ -11,10 +11,11 @@ export const activeSales = async (now = new Date()) => db.select().from(kempoDis
 
 /*
   Whether a sale covers a product (as kempo-products returns it): the whole catalog, the product itself, a
-  category it is in, or its type. A credit pack (a product that is only credits) is never discounted.
+  category it is in, or its type. A credit pack is a product like any other here: a sale discounts it when it
+  covers it, so leave a pack out of a sale by adding products, categories or types instead of "every product".
 */
 export const covers = (sale, product) => {
-  if(!product || product.creditsOnly) return false;
+  if(!product) return false;
   if(sale.allProducts) return true;
   return (sale.targets ?? []).some(target => (target.type === 'product' && target.key === product.id)
     || (target.type === 'category' && (product.categories ?? []).includes(target.key))

@@ -175,7 +175,7 @@ export default class SaleForm extends ShadowComponent {
 
   renderCovers(){
     const { draft } = this;
-    if(draft.allProducts) return html`<p class="tc-muted">Every product in the catalog is in this sale (credit packs are never discounted).</p>`;
+    if(draft.allProducts) return html`<p class="tc-muted">Every product in the catalog is in this sale, credit packs included. To leave something out, add products, categories or types instead.</p>`;
     const chosen = draft.targets.filter(target => target.type === 'product');
     return html`
       <div class="mb">

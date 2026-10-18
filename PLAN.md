@@ -17,7 +17,7 @@ buy-X-get-Y, per-customer or per-group sales, usage limits, reports.
    product and category pages: "Add to a discount" and "Quick discount". Per-product only in v1 (never "the whole order").
 2. **Fixed-amount and percent sales, and stacking is a choice per sale** (see "Stacking"): off by default. When sales combine, fixed amounts come off first, then the added percents come off what is left.
 3. **Requires kempo-products and kempo-commerce** (a sale price you cannot buy at is no use).
-4. **Credit packs** (credit-only products) are never discounted.
+4. **Credit packs** (credit-only products) are discounted like any other product when a sale covers them.
 5. **The product page and cards show the sale:** original price struck through, the sale price, and a badge with the real saving.
 6. **A minimum price per product, built into kempo-products** and honoured by every discount (see "Minimum price").
 

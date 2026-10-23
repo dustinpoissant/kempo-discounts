@@ -107,3 +107,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - run: npm publish --access public
+
+# Releases are cut by the Publish workflow.

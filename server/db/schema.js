@@ -1,12 +1,12 @@
 import { pgTable, text, timestamp, integer, boolean, jsonb, index, uniqueIndex } from 'drizzle-orm/pg-core';
 
 /*
-  A sale: a discount that products, categories and product types are added to.
+  A sale: a discount that products and categories are added to.
 
   `kind` is `percent` (`value` 1 to 100) or `fixed` (`value` is an amount off each unit, in the smallest
   currency unit). `stackable` says whether it may combine with other discounts on a line. The sale covers a
   product when `allProducts` is set, when the product is listed in `targets`, or when it is in a listed
-  category or of a listed type: `targets` is a list of `{ type: 'product' | 'category' | 'type', key }`.
+  category: `targets` is a list of `{ type: 'product' | 'category', key }`.
 
   Whether it is running is not stored: it is worked out from `paused`, `startsAt` and `endsAt` when asked.
 */

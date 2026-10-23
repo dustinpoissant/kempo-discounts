@@ -29,7 +29,7 @@ export const updateSale = (id, data) => req('PATCH', `${BASE}/sales/${enc(id)}`,
 export const deleteSale = id => req('DELETE', `${BASE}/sales/${enc(id)}`);
 export const duplicateSale = id => req('POST', `${BASE}/sales/${enc(id)}/duplicate`, {});
 
-/* Adds `[{ type: 'product' | 'category' | 'type', key }]` to a sale. Resolves with how many were new. */
+/* Adds `[{ type: 'product' | 'category', key }]` to a sale. Resolves with how many were new. */
 export const addToSale = (id, targets) => req('POST', `${BASE}/sales/${enc(id)}/targets`, { targets });
 
 /*

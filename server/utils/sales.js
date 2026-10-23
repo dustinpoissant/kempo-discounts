@@ -9,7 +9,7 @@ const newId = () => crypto.randomBytes(8).toString('hex');
 const MAX_NAME = 100;
 const MAX_TARGETS = 500;
 const MAX_KEY = 200;
-export const TARGET_TYPES = ['product', 'category', 'type'];
+export const TARGET_TYPES = ['product', 'category'];
 
 /*
   Where a sale stands, worked out when asked so nothing needs a timer: paused, scheduled (it starts later), ended,

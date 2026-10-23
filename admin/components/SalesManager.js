@@ -110,7 +110,7 @@ export default class SalesManager extends ShadowComponent {
       ${this.sales.length ? html`<div class="table-wrapper"><table>
         <thead><tr><th>Sale</th><th>Applies to</th><th>When</th><th>State</th><th>Orders</th><th>Saved</th><th></th></tr></thead>
         <tbody>${this.sales.map(this.renderRow)}</tbody>
-      </table></div>` : html`<p class="tc-muted">No sales yet. A sale takes a percent or an amount off the products, categories and types you add to it, between the dates you choose. You can also start one from a product's or a category's own page.</p>`}
+      </table></div>` : html`<p class="tc-muted">No sales yet. A sale takes a percent or an amount off the products and categories you add to it, between the dates you choose. You can also start one from a product's or a category's own page.</p>`}
     </div>`;
   }
 }

@@ -4,13 +4,13 @@ import Toast from '/kempo-ui/components/Toast.js';
 import '/kempo-ui/components/Icon.js';
 import '/kempo-ui/components/Spinner.js';
 import '/products/components/MoneyInput.js';
-import { getConfig, getProducts, getCategories, getTypes, displayMoney } from '/products/sdk.js';
+import { getConfig, getProducts, getCategories, displayMoney } from '/products/sdk.js';
 import { getSale, createSale, updateSale } from '/discounts/sdk.js';
 import { exampleText, toLocalInput, fromLocalInput } from './format.js';
 
 /*
   The form for one sale, to make a new one or change one that exists. It says what the sale takes off, whether it may
-  combine with other discounts, what it covers (every product, or products, categories and product types added to it),
+  combine with other discounts, what it covers (every product, or products and categories added to it),
   and when it runs.
 
     <k-discounts-sale-form from-url></k-discounts-sale-form>      reads ?id= for the sale to change
@@ -28,7 +28,6 @@ export default class SaleForm extends ShadowComponent {
     config: { state: true },
     draft: { state: true },
     categories: { state: true },
-    types: { state: true },
     names: { state: true },
     results: { state: true },
     searching: { state: true },
@@ -44,7 +43,6 @@ export default class SaleForm extends ShadowComponent {
     this.config = null;
     this.draft = { ...BLANK, targets: [] };
     this.categories = [];
-    this.types = [];
     this.names = new Map();
     this.results = [];
     this.searching = false;
@@ -71,15 +69,14 @@ export default class SaleForm extends ShadowComponent {
   }
 
   load = async () => {
-    const [[configError, config], [categoriesError, categories], [typesError, types]] = await Promise.all([getConfig(), getCategories(), getTypes()]);
-    if(configError || categoriesError || typesError){
-      this.error = (configError || categoriesError || typesError).msg;
+    const [[configError, config], [categoriesError, categories]] = await Promise.all([getConfig(), getCategories()]);
+    if(configError || categoriesError){
+      this.error = (configError || categoriesError).msg;
       this.loading = false;
       return;
     }
     this.config = config;
     this.categories = categories.categories ?? [];
-    this.types = types.types ?? types.items ?? [];
 
     if(this.editing){
       const [error, data] = await getSale(this.saleId);
@@ -175,7 +172,7 @@ export default class SaleForm extends ShadowComponent {
 
   renderCovers(){
     const { draft } = this;
-    if(draft.allProducts) return html`<p class="tc-muted">Every product in the catalog is in this sale, credit packs included. To leave something out, add products, categories or types instead.</p>`;
+    if(draft.allProducts) return html`<p class="tc-muted">Every product in the catalog is in this sale, credit packs included. To leave something out, add products or categories instead.</p>`;
     const chosen = draft.targets.filter(target => target.type === 'product');
     return html`
       <div class="mb">
@@ -187,8 +184,6 @@ export default class SaleForm extends ShadowComponent {
       </div>
       ${this.categories.length ? html`<div class="mb"><div class="mbq">Categories<small class="d-b tc-muted">Everything in a category, including products added to it later.</small></div>
         ${this.categories.map(category => html`<label class="checkbox d-b"><input type="checkbox" ?checked=${this.has('category', category.key)} @change=${() => this.toggle('category', category.key)}> ${category.name}</label>`)}</div>` : nothing}
-      ${this.types.length ? html`<div class="mb"><div class="mbq">Product types</div>
-        ${this.types.map(type => html`<label class="checkbox d-b"><input type="checkbox" ?checked=${this.has('type', type.key)} @change=${() => this.toggle('type', type.key)}> ${type.name}</label>`)}</div>` : nothing}
     `;
   }
 
@@ -197,7 +192,7 @@ export default class SaleForm extends ShadowComponent {
     if(this.error) return html`<p class="tc-danger">${this.error}</p>`;
     const { draft, config } = this;
     return html`<form @submit=${this.save} style="max-width: 44rem;">
-      <div class="mb"><label class="d-b mbq" for="name">Name<small class="d-b tc-muted">Optional. Only you see it, to tell your sales apart. Customers just see "Sale".</small></label><input type="text" id="name" class="full" maxlength="100" placeholder="Fall sale" .value=${draft.name} @input=${event => this.set({ name: event.target.value })}></div>
+      <div class="mb"><label class="d-b mbq" for="name">Name<small class="d-b tc-muted">Optional. Customers see it on the cart as "Sale: Name (10% Off)". Blank shows "Sale: 10% Off".</small></label><input type="text" id="name" class="full" maxlength="100" placeholder="Fall sale" .value=${draft.name} @input=${event => this.set({ name: event.target.value })}></div>
 
       <h4>Discount</h4>
       <div class="d-f mb" style="gap: var(--spacer); align-items: flex-end;">

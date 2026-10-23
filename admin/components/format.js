@@ -22,7 +22,6 @@ export const coverText = sale => {
   const parts = [];
   if(count('product')) parts.push(`${count('product')} product${count('product') === 1 ? '' : 's'}`);
   if(count('category')) parts.push(`${count('category')} ${count('category') === 1 ? 'category' : 'categories'}`);
-  if(count('type')) parts.push(`${count('type')} type${count('type') === 1 ? '' : 's'}`);
   return parts.join(', ') || 'Nothing yet';
 };
 

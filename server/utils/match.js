@@ -11,15 +11,14 @@ export const activeSales = async (now = new Date()) => db.select().from(kempoDis
 
 /*
   Whether a sale covers a product (as kempo-products returns it): the whole catalog, the product itself, a
-  category it is in, or its type. A credit pack is a product like any other here: a sale discounts it when it
-  covers it, so leave a pack out of a sale by adding products, categories or types instead of "every product".
+  category it is in. A credit pack is a product like any other here: a sale discounts it when it
+  covers it, so leave a pack out of a sale by adding products or categories instead of "every product".
 */
 export const covers = (sale, product) => {
   if(!product) return false;
   if(sale.allProducts) return true;
   return (sale.targets ?? []).some(target => (target.type === 'product' && target.key === product.id)
-    || (target.type === 'category' && (product.categories ?? []).includes(target.key))
-    || (target.type === 'type' && product.type === target.key));
+    || (target.type === 'category' && (product.categories ?? []).includes(target.key)));
 };
 
 export const salesFor = (sales, product) => sales.filter(sale => covers(sale, product));

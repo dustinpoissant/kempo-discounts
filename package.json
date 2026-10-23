@@ -1,7 +1,6 @@
 {
   "name": "kempo-discounts",
   "version": "0.1.0",
-  "private": true,
   "description": "Sales and discounts for kempo: a percent or a fixed amount off chosen products or categories, on a schedule, that can stack, with a minimum price per product and a count of what each one saved",
   "license": "MIT",
   "author": "Dustin Poissant",
@@ -37,9 +36,9 @@
     "drizzle-orm": "^0.45.2"
   },
   "peerDependencies": {
-    "kempo": ">=4.7.0",
+    "kempo": ">=4.8.0",
     "kempo-commerce": ">=0.1.0",
-    "kempo-products": ">=0.2.0",
+    "kempo-products": ">=0.3.0",
     "kempo-server": ">=3.3.0",
     "kempo-ui": ">=0.6.0"
   },

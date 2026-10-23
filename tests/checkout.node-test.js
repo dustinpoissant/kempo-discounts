@@ -14,7 +14,7 @@ import { kempoDiscountUsage } from '../server/db/schema.js';
   follows payment and refunds.
 */
 
-const BILLING = { name: 'Fixture Buyer', email: 'fixture@example.test' };
+const BILLING = { name: 'Fixture Buyer', email: 'fixture@example.test', line1: '1 Test St' };
 
 const ok = ([error, value]) => {
   if(error) throw new Error(`unexpected error: ${error.code} ${error.msg}`);
@@ -50,7 +50,7 @@ export default {
     const cart = ok(await getCart({ cartId }));
     if(cart.totals.discountTotal !== -2000 || cart.totals.total !== 6000) return fail(`totals ${JSON.stringify(cart.totals)}`);
     const row = cart.adjustments.find(adjustment => adjustment.type === 'discount');
-    if(!row || row.label !== 'Sale' || row.source !== 'kempo-discounts' || row.lineId !== cart.lines[0].id) return fail(`row ${JSON.stringify(row)}`);
+    if(!row || row.label !== 'Sale: 25% Off' || row.source !== 'kempo-discounts' || row.lineId !== cart.lines[0].id) return fail(`row ${JSON.stringify(row)}`);
 
     ok(await updateSale(sale.id, { paused: true }));
     if(await discountOf(cartId) !== 0) return fail('a paused sale still takes something off');
@@ -97,6 +97,21 @@ export default {
     pass('');
   },
 
+  'a storefront price says a fixed amount, a percent, or both, the way the sales do': async ({ pass, fail }) => {
+    await purge();
+    const item = await makeProduct({ price: 5000 });
+    const sale = ok(await createSale({ kind: 'fixed', value: 200, allProducts: true, stackable: true }));
+    let quote = (await quoteProducts([{ productId: item.id, unitPrice: 5000 }]))[item.id];
+    if(JSON.stringify(quote.parts) !== JSON.stringify([{ kind: 'fixed', value: 200 }])) return fail(`a fixed sale: ${JSON.stringify(quote)}`);
+    ok(await createSale({ kind: 'percent', value: 10, allProducts: true, stackable: true }));
+    quote = (await quoteProducts([{ productId: item.id, unitPrice: 5000 }]))[item.id];
+    if(JSON.stringify(quote.parts) !== JSON.stringify([{ kind: 'fixed', value: 200 }, { kind: 'percent', value: 10 }]) || quote.salePrice !== 4320) return fail(`both: ${JSON.stringify(quote)}`);
+    ok(await deleteSale(sale.id));
+    quote = (await quoteProducts([{ productId: item.id, unitPrice: 5000 }]))[item.id];
+    if(JSON.stringify(quote.parts) !== JSON.stringify([{ kind: 'percent', value: 10 }])) return fail(`a percent sale: ${JSON.stringify(quote)}`);
+    pass('');
+  },
+
   'the storefront price is the cart price, with the real percent saved': async ({ pass, fail }) => {
     await purge();
     const item = await makeProduct({ price: 5000, minimumPrice: 2800 });
@@ -106,6 +121,7 @@ export default {
     const quotes = await quoteProducts([{ productId: item.id, unitPrice: 5000 }, { productId: other.id, unitPrice: 999 }, { productId: 'missing', unitPrice: 100 }]);
     const held = quotes[item.id];
     if(!held || held.salePrice !== 2800 || held.off !== 2200 || held.percentOff !== 44 || !held.limited) return fail(`held ${JSON.stringify(held)}`);
+    if(JSON.stringify(held.parts) !== JSON.stringify([{ kind: 'fixed', value: 2200 }])) return fail(`a held-back sale says the real amount: ${JSON.stringify(held.parts)}`);
     const small = quotes[other.id];
     if(!small || small.salePrice !== 0 || small.off !== 999) return fail(`a fixed amount larger than the price takes all of it: ${JSON.stringify(small)}`);
     if(quotes.missing) return fail('an unknown product has no quote');

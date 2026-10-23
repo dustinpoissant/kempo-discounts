@@ -10,8 +10,8 @@ import { quote } from '/discounts/sdk.js';
     <k-discounts-price slot="price"></k-discounts-price>
 
   With no sale it draws the normal price itself, from the card's `priceText` or the page's `priceLine`, so the slot
-  looks as it did. With a sale it shows the original struck through, the price the customer pays and the real percent
-  saved (rounded down, never more than they get). The price comes from the same function the cart uses, with the
+  looks as it did. With a sale it shows the original struck through, the price the customer pays and what the sales
+  take off as they say it: "-$2.00" for a fixed amount, "-10%" for a percent, "-$2.00 and -10%" for both. The price comes from the same function the cart uses, with the
   unit price the page is showing (so a product page follows the options chosen).
 */
 export default class DiscountsPrice extends ShadowComponent {
@@ -96,11 +96,13 @@ export default class DiscountsPrice extends ShadowComponent {
       return detail ? html`<div class="large mb" aria-live="polite">${text}</div>` : html`<div class="tc-muted">${text}</div>`;
     }
 
-    const { unitPrice, salePrice, percentOff } = this.sale;
+    const { unitPrice, salePrice, percentOff, parts } = this.sale;
+    /* An older answer without `parts` falls back to the percent. */
+    const saved = (parts ?? (percentOff >= 1 ? [{ kind: 'percent', value: percentOff }] : [])).map(part => (part.kind === 'fixed' ? `-${money(part.value)}` : `-${part.value}%`)).join(' and ');
     return html`<div class=${detail ? 'large mb' : ''} aria-live="polite">
       <s class="tc-muted">${money(unitPrice)}</s>
       <strong>${money(salePrice)}</strong>
-      ${percentOff >= 1 ? html`<span class="bg-danger" style="color: var(--tc_on_danger); padding: 0 var(--spacer_q, 0.25rem); border-radius: var(--radius);">-${percentOff}%</span>` : nothing}
+      ${saved ? html`<span class="bg-danger" style="color: var(--tc_on_danger); padding: 0 var(--spacer_q, 0.25rem); border-radius: var(--radius);">${saved}</span>` : nothing}
     </div>`;
   }
 }

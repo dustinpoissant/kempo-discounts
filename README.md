@@ -1,6 +1,6 @@
 # kempo-discounts
 
-Sales and discounts for [kempo](https://github.com/dustinpoissant/kempo): take a percent or a fixed amount off the products, categories and product types you choose, between the dates you choose. It is **Sales and Discounts** in the Marketing menu. Discount **codes** a customer types in are a different extension (kempo-coupons).
+Sales and discounts for [kempo](https://github.com/dustinpoissant/kempo): take a percent or a fixed amount off the products and categories you choose, between the dates you choose. It is **Sales and Discounts** in the Marketing menu. Discount **codes** a customer types in are a different extension (kempo-coupons).
 
 It needs **kempo-products** (the catalog) and **kempo-commerce** (the cart and orders), and installs like any kempo extension.
 
@@ -9,11 +9,11 @@ It needs **kempo-products** (the catalog) and **kempo-commerce** (the cart and o
 A sale is its own thing that products are added to, the Etsy way, not a field on every product. It has:
 
 - **What it takes off**: a percent (1 to 100), or a fixed amount off each one, in the catalog's currency.
-- **What it applies to**: every product, or a mix of individual products, whole **categories** (including products added to them later) and product **types**. A credit pack is a product like any other, so a sale discounts it when it covers it.
+- **What it applies to**: every product, or a mix of individual products, and whole **categories** (including products added to them later). A credit pack is a product like any other, so a sale discounts it when it covers it.
 - **When**: an optional start and end (in your own time zone). Blank is "as soon as it is saved" and "until you stop it".
 - **Can be combined**, off by default (see below).
 - **Paused**, to stop it without deleting it.
-- A **name**, optional and only for you; customers just see "Sale" on the cart.
+- A **name**, optional. Customers see it on the cart as "Sale: Name (10% Off)"; with no name the cart shows "Sale: 10% Off".
 
 A sale is *Scheduled*, *Running*, *Ended* or *Paused*, worked out when asked, so nothing needs a timer.
 
@@ -37,7 +37,7 @@ This is worked out by kempo-commerce, once, for every extension that adds discou
 ## What customers see
 
 - **Product cards and pages** show the original price struck through, the price they pay, and the real percent saved (rounded down). It follows the options chosen on a product page. With no sale the price looks as it always did.
-- **The cart and checkout** take the discount off the line and show one "Sale" row. The order keeps it against its line, so a later edit or delete of the sale never changes an old order, tax is worked out on what the customer pays, and **a refund of a line returns what was paid for it**.
+- **The cart and checkout** take the discount off the line and show one row per sale, labelled "Sale: Name (10% Off)" or "Sale: 10% Off" when unnamed. The order keeps it against its line, so a later edit or delete of the sale never changes an old order, tax is worked out on what the customer pays, and **a refund of a line returns what was paid for it**.
 
 ## What it saved
 
@@ -62,8 +62,8 @@ Under `/discounts/api`:
 | `POST sales` | `discounts:manage` | Create one: `{ name, kind, value, stackable, allProducts, targets, startsAt, endsAt, paused }` |
 | `GET`, `PATCH`, `DELETE sales/<id>` | view, manage | Read, change, delete |
 | `POST sales/<id>/duplicate` | `discounts:manage` | A paused copy |
-| `POST sales/<id>/targets` | `discounts:manage` | Add `{ targets: [{ type: 'product' \| 'category' \| 'type', key }] }`; says how many were new |
-| `POST quote` | no one | `{ lines: [{ productId, unitPrice }] }` answers `{ quotes: { [productId]: { unitPrice, salePrice, off, percentOff, limited } } }` for products with a sale |
+| `POST sales/<id>/targets` | `discounts:manage` | Add `{ targets: [{ type: 'product' \| 'category', key }] }`; says how many were new |
+| `POST quote` | no one | `{ lines: [{ productId, unitPrice }] }` answers `{ quotes: { [productId]: { unitPrice, salePrice, off, percentOff, limited, parts } } }` for products with a sale |
 
 ## Building on it
 

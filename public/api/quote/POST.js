@@ -2,7 +2,7 @@ import { quoteProducts } from '../../../server/utils/quote.js';
 
 /*
   What running sales do to some prices, for a storefront to show: `{ lines: [{ productId, unitPrice }] }`
-  answers `{ quotes: { [productId]: { unitPrice, salePrice, off, percentOff, limited } } }`, leaving out products
+  answers `{ quotes: { [productId]: { unitPrice, salePrice, off, percentOff, limited, parts } } }`, leaving out products
   with no sale. Public, like the product list: it only does arithmetic on what it is given and changes nothing.
 */
 export default async (request, response) => {

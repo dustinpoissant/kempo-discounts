@@ -1,6 +1,6 @@
 {
   "name": "kempo-discounts",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Sales and discounts for kempo: a percent or a fixed amount off chosen products or categories, on a schedule, that can stack, with a minimum price per product and a count of what each one saved",
   "license": "MIT",
   "author": "Dustin Poissant <dustinpoissant@gmail.com>",

@@ -16,3 +16,9 @@ All notable changes to `kempo-discounts` are documented in this file.
 - Permissions `discounts:view` and `discounts:manage`, groups `kempo-discounts:viewer` and `kempo-discounts:manager`, the SDK, and the events `kempo-discounts:sale:created`, `updated` and `deleted`.
 
 Needs kempo 4.7.0, kempo-products 0.2.0 (the minimum price and the admin button locations) and a kempo-commerce that combines discounts.
+
+## [0.1.2] - 2026-10-26
+### Changed
+- The sales list is a kempo-ui table. A row opens the sale, and Edit, Pause or resume, Duplicate and Delete are row controls.
+- The category sale buttons are row controls, Add to a sale and Quick discount, placed after each category's own controls.
+- Requires kempo 4.9.7 (the admin lists use kempo-ui tables).

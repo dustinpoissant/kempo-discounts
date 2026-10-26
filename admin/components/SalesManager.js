@@ -4,13 +4,16 @@ import Toast from '/kempo-ui/components/Toast.js';
 import Dialog from '/kempo-ui/components/Dialog.js';
 import '/kempo-ui/components/Icon.js';
 import '/kempo-ui/components/Spinner.js';
+import '/kempo-ui/components/Table.js';
+import '/kempo-ui/components/controls/TcOpen.js';
 import { getConfig, displayMoney } from '/products/sdk.js';
 import { getSales, updateSale, deleteSale, duplicateSale } from '/discounts/sdk.js';
-import { saleLabel, discountText, coverText, whenText, STATE_LABELS, STATE_CLASSES } from './format.js';
+import { saleLabel, discountText, coverText, whenText, STATE_LABELS } from './format.js';
+import './SaleAction.js';
 
 /*
   The sales list: what each sale does, what it covers, when it runs, whether it is running, and how many
-  orders it was used on and what it saved customers (net of refunds).
+  orders it was used on and what it saved customers (net of refunds). A row opens the sale.
 
     <k-discounts-sales></k-discounts-sales>
 */
@@ -56,6 +59,24 @@ export default class SalesManager extends ShadowComponent {
 
   money = minor => displayMoney(minor, this.config.currency, this.config.decimals);
 
+  editUrl = sale => `${BASE}/edit/?id=${encodeURIComponent(sale.id)}`;
+
+  /* Refills the table whenever the sales change. */
+  updated(changed){
+    if(!changed.has('sales') || !this.config) return;
+    this.renderRoot.querySelector('k-table')?.setData({
+      records: this.sales.map(sale => ({ ...sale, _url: this.editUrl(sale) })),
+      fields: [
+        { name: 'name', label: 'Sale', editable: false, calculator: sale => sale.name ? `${saleLabel(sale, this.config)} · ${discountText(sale, this.config)}` : saleLabel(sale, this.config) },
+        { name: 'cover', label: 'Applies to', size: 200, editable: false, calculator: coverText },
+        { name: 'when', label: 'When', size: 200, editable: false, calculator: whenText },
+        { name: 'state', label: 'State', size: 150, editable: false, calculator: sale => `${STATE_LABELS[sale.state]}${sale.stackable ? ' · combines' : ''}` },
+        { name: 'orders', label: 'Orders', size: 90, editable: false },
+        { name: 'saved', label: 'Saved', size: 120, editable: false, calculator: sale => this.money(sale.saved) },
+      ],
+    });
+  }
+
   /*
     Event handlers
   */
@@ -84,33 +105,26 @@ export default class SalesManager extends ShadowComponent {
     });
   };
 
+  actOn = ({ action, record }) => {
+    if(action === 'pause') this.togglePause(record);
+    else if(action === 'duplicate') this.duplicate(record);
+    else if(action === 'delete') this.remove(record);
+  };
+
   /*
     View
   */
-  renderRow = sale => html`<tr>
-    <td><a href=${`${BASE}/edit/?id=${encodeURIComponent(sale.id)}`}><strong>${saleLabel(sale, this.config)}</strong></a>${sale.name ? html`<div class="tc-muted">${discountText(sale, this.config)}</div>` : nothing}</td>
-    <td>${coverText(sale)}</td>
-    <td>${whenText(sale)}</td>
-    <td><span class=${STATE_CLASSES[sale.state]} style="padding: 0 var(--spacer_q, 0.25rem); border-radius: var(--radius);">${STATE_LABELS[sale.state]}</span>${sale.stackable ? html` <span class="tc-muted" title="Can be combined with other discounts">combines</span>` : nothing}</td>
-    <td>${sale.orders}</td>
-    <td>${this.money(sale.saved)}</td>
-    <td style="white-space: nowrap;">
-      <a class="btn" title="Edit" aria-label=${`Edit ${saleLabel(sale, this.config)}`} href=${`${BASE}/edit/?id=${encodeURIComponent(sale.id)}`}><k-icon name="edit"></k-icon></a>
-      <button type="button" class="btn" title=${sale.paused ? 'Resume' : 'Pause'} aria-label=${`${sale.paused ? 'Resume' : 'Pause'} ${saleLabel(sale, this.config)}`} @click=${() => this.togglePause(sale)}><k-icon name=${sale.paused ? 'play' : 'pause'}></k-icon></button>
-      <button type="button" class="btn" title="Duplicate" aria-label=${`Duplicate ${saleLabel(sale, this.config)}`} @click=${() => this.duplicate(sale)}><k-icon name="content_copy"></k-icon></button>
-      <button type="button" class="btn" title="Delete" aria-label=${`Delete ${saleLabel(sale, this.config)}`} @click=${() => this.remove(sale)}><k-icon name="delete"></k-icon></button>
-    </td>
-  </tr>`;
-
   render(){
     if(this.loading) return html`<k-spinner></k-spinner>`;
     if(this.error) return html`<p class="tc-danger">${this.error}</p>`;
     return html`<div>
       <div class="mb"><a class="btn primary" id="newSale" href=${`${BASE}/new/`}><k-icon name="add"></k-icon> New sale</a></div>
-      ${this.sales.length ? html`<div class="table-wrapper"><table>
-        <thead><tr><th>Sale</th><th>Applies to</th><th>When</th><th>State</th><th>Orders</th><th>Saved</th><th></th></tr></thead>
-        <tbody>${this.sales.map(this.renderRow)}</tbody>
-      </table></div>` : html`<p class="tc-muted">No sales yet. A sale takes a percent or an amount off the products and categories you add to it, between the dates you choose. You can also start one from a product's or a category's own page.</p>`}
+      <k-table open-on-click placeholder="No sales yet. A sale takes a percent or an amount off the products and categories you add to it, between the dates you choose. You can also start one from a product's or a category's own page." @saleAction=${event => this.actOn(event.detail)}>
+        <kc-tc-open slot="before" title="Edit"><k-icon name="edit"></k-icon></kc-tc-open>
+        <k-discounts-sale-action slot="after" action="pause"></k-discounts-sale-action>
+        <k-discounts-sale-action slot="after" action="duplicate"></k-discounts-sale-action>
+        <k-discounts-sale-action slot="after" action="delete"></k-discounts-sale-action>
+      </k-table>
     </div>`;
   }
 }

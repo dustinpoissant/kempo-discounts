@@ -68,7 +68,7 @@ export default {
       if(!existsSync(path.join(root, 'public', file))) return fail(`public/${file} is loaded but missing`);
     }
     if(!/location="products-admin-product-actions"[^>]*><k-discounts-product-actions slot="actions">/.test(admin)) return fail('the product buttons name their slot');
-    if(!/location="products-admin-category-actions"[^>]*><k-discounts-category-actions slot="actions">/.test(admin)) return fail('the category buttons name their slot');
+    if(!/location="products-admin-category-actions"[^>]*><k-discounts-category-sale-action slot="after" action="add">/.test(admin)) return fail('the category buttons name their slot');
     if(!/location="products-card-price"><k-discounts-price slot="price">/.test(storefront) || !/location="products-detail-price"><k-discounts-price slot="price">/.test(storefront)) return fail('the price names its slot');
     pass('');
   },

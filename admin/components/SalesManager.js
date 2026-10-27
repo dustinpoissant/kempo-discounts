@@ -6,6 +6,8 @@ import '/kempo-ui/components/Icon.js';
 import '/kempo-ui/components/Spinner.js';
 import '/kempo-ui/components/Table.js';
 import '/kempo-ui/components/controls/TcOpen.js';
+import '/kempo-ui/components/controls/TcSearch.js';
+import '/kempo-ui/components/controls/TcFieldSortHide.js';
 import { getConfig, displayMoney } from '/products/sdk.js';
 import { getSales, updateSale, deleteSale, duplicateSale } from '/discounts/sdk.js';
 import { saleLabel, discountText, coverText, whenText, STATE_LABELS } from './format.js';
@@ -118,8 +120,8 @@ export default class SalesManager extends ShadowComponent {
     if(this.loading) return html`<k-spinner></k-spinner>`;
     if(this.error) return html`<p class="tc-danger">${this.error}</p>`;
     return html`<div>
-      <div class="mb"><a class="btn primary" id="newSale" href=${`${BASE}/new/`}><k-icon name="add"></k-icon> New sale</a></div>
       <k-table open-on-click placeholder="No sales yet. A sale takes a percent or an amount off the products and categories you add to it, between the dates you choose. You can also start one from a product's or a category's own page." @saleAction=${event => this.actOn(event.detail)}>
+        <div slot="top" class="d-f full" style="align-items: center;"><kc-tc-search style="width: 16rem"></kc-tc-search><kc-tc-field-sort-hide></kc-tc-field-sort-hide><div class="flex"></div><a class="btn primary" id="newSale" href=${`${BASE}/new/`}><k-icon name="add"></k-icon> New sale</a></div>
         <kc-tc-open slot="before" title="Edit"><k-icon name="edit"></k-icon></kc-tc-open>
         <k-discounts-sale-action slot="after" action="pause"></k-discounts-sale-action>
         <k-discounts-sale-action slot="after" action="duplicate"></k-discounts-sale-action>

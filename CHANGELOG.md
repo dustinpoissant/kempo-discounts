@@ -17,6 +17,11 @@ All notable changes to `kempo-discounts` are documented in this file.
 
 Needs kempo 4.7.0, kempo-products 0.2.0 (the minimum price and the admin button locations) and a kempo-commerce that combines discounts.
 
+### Changed
+
+- The `kempo-ui` peer dependency is now `>=1.0.0`.
+- The `kempo` peer dependency is now `>=4.10.2`.
+
 ## [0.1.2] - 2026-10-26
 ### Changed
 - The sales list is a kempo-ui table. A row opens the sale, and Edit, Pause or resume, Duplicate and Delete are row controls.

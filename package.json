@@ -36,11 +36,11 @@
     "drizzle-orm": "^0.45.2"
   },
   "peerDependencies": {
-    "kempo": ">=4.9.10",
+    "kempo": ">=4.10.2",
     "kempo-commerce": ">=0.1.0",
     "kempo-products": ">=0.3.0",
     "kempo-server": ">=3.3.0",
-    "kempo-ui": ">=0.6.0"
+    "kempo-ui": ">=1.0.0"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.9",

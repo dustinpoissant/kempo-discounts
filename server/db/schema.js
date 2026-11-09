@@ -13,6 +13,7 @@ import { pgTable, text, timestamp, integer, boolean, jsonb, index, uniqueIndex }
 export const kempoDiscountSale = pgTable('kempoDiscountSale', {
   id: text('id').primaryKey(),
   name: text('name').notNull().default(''),
+  slug: text('slug').notNull().default(''), // its address, /sales/<slug>; made from the name, kept when the name changes
   kind: text('kind').notNull(), // percent | fixed
   value: integer('value').notNull(),
   stackable: boolean('stackable').notNull().default(false),

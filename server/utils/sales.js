@@ -3,6 +3,7 @@ import db from 'kempo/server/db/index.js';
 import { eq, desc, sql } from 'drizzle-orm';
 import { kempoDiscountSale, kempoDiscountUsage } from '../db/schema.js';
 import { EVENTS, notify } from './hooks.js';
+import { slugFromName, slugProblem, freeSlug } from './saleSlug.js';
 
 const newId = () => crypto.randomBytes(8).toString('hex');
 
@@ -53,6 +54,10 @@ export const normalizeTargets = input => {
 */
 const validate = (input, existing = null) => {
   const values = {};
+
+  if(input.slug !== undefined && String(input.slug).trim() !== ''){
+    values.slug = String(input.slug).trim().toLowerCase();
+  }
 
   if(input.name !== undefined){
     const name = String(input.name ?? '').trim();
@@ -123,6 +128,17 @@ export const getSale = async id => {
 };
 
 /* Every sale, newest first, with its state and what it did. `state` narrows to one of paused, scheduled, running and ended. */
+/* The sale at an address, for the public sale page: not found when there is none. */
+export const getSaleBySlug = async slug => {
+  try {
+    const [row] = await db.select().from(kempoDiscountSale).where(eq(kempoDiscountSale.slug, String(slug ?? ''))).limit(1);
+    if(!row) return [{ code: 404, msg: 'There is no sale at that address' }, null];
+    return [null, withState(row)];
+  } catch {
+    return [{ code: 500, msg: 'Failed to retrieve the sale' }, null];
+  }
+};
+
 export const getSales = async ({ state } = {}) => {
   try {
     const rows = await db.select().from(kempoDiscountSale).orderBy(desc(kempoDiscountSale.created), desc(kempoDiscountSale.id));
@@ -137,15 +153,18 @@ export const getSales = async ({ state } = {}) => {
 export const createSale = async (data = {}, { actor = '' } = {}) => {
   const [invalid, values] = validate(data);
   if(invalid) return [invalid, null];
+  if(values.slug !== undefined && slugProblem(values.slug)) return [{ code: 400, msg: slugProblem(values.slug) }, null];
   const now = new Date();
+  const slug = values.slug || await freeSlug(slugFromName(values.name) || 'sale');
   try {
     const [sale] = await db.insert(kempoDiscountSale).values({
       id: newId(), name: '', stackable: false, allProducts: false, targets: [], startsAt: null, endsAt: null, paused: false,
-      ...values, created: now, updated: now,
+      ...values, slug, created: now, updated: now,
     }).returning();
     await notify(EVENTS.saleCreated, { sale, actor });
     return [null, withState(sale)];
-  } catch {
+  } catch(error) {
+    if((error?.code || error?.cause?.code) === '23505') return [{ code: 409, msg: 'Another sale already has that address' }, null];
     return [{ code: 500, msg: 'Failed to create the sale' }, null];
   }
 };
@@ -155,12 +174,14 @@ export const updateSale = async (id, data = {}, { actor = '' } = {}) => {
   if(lookupError) return [lookupError, null];
   const [invalid, values] = validate(data, existing);
   if(invalid) return [invalid, null];
+  if(values.slug !== undefined && slugProblem(values.slug)) return [{ code: 400, msg: slugProblem(values.slug) }, null];
   if(!Object.keys(values).length) return [null, existing];
   try {
     const [sale] = await db.update(kempoDiscountSale).set({ ...values, updated: new Date() }).where(eq(kempoDiscountSale.id, existing.id)).returning();
     await notify(EVENTS.saleUpdated, { sale, previous: existing, actor });
     return getSale(sale.id);
-  } catch {
+  } catch(error) {
+    if((error?.code || error?.cause?.code) === '23505') return [{ code: 409, msg: 'Another sale already has that address' }, null];
     return [{ code: 500, msg: 'Failed to update the sale' }, null];
   }
 };

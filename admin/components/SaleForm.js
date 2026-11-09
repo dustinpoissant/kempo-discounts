@@ -19,7 +19,7 @@ import { exampleText, toLocalInput, fromLocalInput } from './format.js';
 */
 const BASE = '/admin/extension/kempo-discounts';
 
-const BLANK = { name: '', kind: 'percent', value: null, stackable: false, allProducts: false, paused: false, startsAt: '', endsAt: '', targets: [] };
+const BLANK = { name: '', slug: '', kind: 'percent', value: null, stackable: false, allProducts: false, paused: false, startsAt: '', endsAt: '', targets: [] };
 
 export default class SaleForm extends ShadowComponent {
   static properties = {
@@ -87,7 +87,7 @@ export default class SaleForm extends ShadowComponent {
       }
       const { sale } = data;
       this.draft = {
-        name: sale.name, kind: sale.kind, value: sale.value, stackable: sale.stackable, allProducts: sale.allProducts, paused: sale.paused,
+        name: sale.name, slug: sale.slug, kind: sale.kind, value: sale.value, stackable: sale.stackable, allProducts: sale.allProducts, paused: sale.paused,
         startsAt: toLocalInput(sale.startsAt), endsAt: toLocalInput(sale.endsAt), targets: sale.targets,
       };
       await this.loadNames(sale.targets.filter(target => target.type === 'product').map(target => target.key));
@@ -140,6 +140,7 @@ export default class SaleForm extends ShadowComponent {
     const { draft } = this;
     const body = {
       name: draft.name,
+      slug: draft.slug,
       kind: draft.kind,
       value: draft.value,
       stackable: draft.stackable,
@@ -193,6 +194,7 @@ export default class SaleForm extends ShadowComponent {
     const { draft, config } = this;
     return html`<form @submit=${this.save} style="max-width: 44rem;">
       <div class="mb"><label class="d-b mbq" for="name">Name<small class="d-b tc-muted">Optional. Customers see it on the cart as "Sale: Name (10% Off)". Blank shows "Sale: 10% Off".</small></label><input type="text" id="name" class="full" maxlength="100" placeholder="Fall sale" .value=${draft.name} @input=${event => this.set({ name: event.target.value })}></div>
+      <div class="mb"><label class="d-b mbq" for="slug">Address<small class="d-b tc-muted">The page of the sale, /sales/&lt;address&gt;, listing the products it covers. Made from the name when the sale is created, and kept if the name changes.</small></label><input type="text" id="slug" class="full" maxlength="80" placeholder="summer-sale" .value=${draft.slug ?? ''} @input=${event => this.set({ slug: event.target.value })}>${this.editing && draft.slug ? html`<p class="m0 mtq"><a href=${`/sales/${draft.slug}`} target="_blank">View the sale's page</a></p>` : nothing}</div>
 
       <h4>Discount</h4>
       <div class="d-f mb" style="gap: var(--spacer); align-items: flex-end;">
@@ -224,7 +226,7 @@ export default class SaleForm extends ShadowComponent {
       <label class="checkbox d-b mb"><input type="checkbox" id="paused" .checked=${draft.paused} @change=${event => this.set({ paused: event.target.checked })}> Paused (it does not apply until you turn this off)</label>
 
       <div class="d-f" style="gap: var(--spacer_h);">
-        <button type="submit" class="btn success" id="saveSale" ?disabled=${this.saving}>${this.saving ? 'Saving…' : this.editing ? 'Save' : 'Create sale'}</button>
+        <button type="submit" class="btn success" id="saveSale" data-save ?disabled=${this.saving}>${this.saving ? 'Saving…' : this.editing ? 'Save' : 'Create sale'}</button>
         <a class="btn" href=${`${BASE}/`}>Cancel</a>
       </div>
     </form>`;

@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import db from 'kempo/server/db/index.js';
+import { backfillSaleSlugs } from '../utils/saleSlug.js';
 
 /*
   The indexes server/db/schema.js declares, created by hand: kempo's installer makes columns and primary keys
@@ -9,11 +10,13 @@ import db from 'kempo/server/db/index.js';
   made the install fails rather than going ahead without it.
 */
 export const INDEXES = [
+  { name: 'kempoDiscountSale_slug_idx', required: true, sql: sql`CREATE UNIQUE INDEX IF NOT EXISTS "kempoDiscountSale_slug_idx" ON "kempoDiscountSale" ("slug")` },
   { name: 'kempoDiscountUsage_sale_order_idx', required: true, sql: sql`CREATE UNIQUE INDEX IF NOT EXISTS "kempoDiscountUsage_sale_order_idx" ON "kempoDiscountUsage" ("saleId", "orderId")` },
   { name: 'kempoDiscountUsage_order_idx', sql: sql`CREATE INDEX IF NOT EXISTS "kempoDiscountUsage_order_idx" ON "kempoDiscountUsage" ("orderId")` },
 ];
 
 export const createIndexes = async () => {
+  await backfillSaleSlugs();
   for(const index of INDEXES){
     try {
       await db.execute(index.sql);

@@ -24,6 +24,9 @@ const enc = encodeURIComponent;
 */
 export const getSales = ({ state } = {}) => req('GET', `${BASE}/sales${state ? `?state=${enc(state)}` : ''}`);
 export const getSale = id => req('GET', `${BASE}/sales/${enc(id)}`);
+
+/* The sales running now, as a page shows them (name, what they take off, when they end). Open to everyone. */
+export const getRunningSales = () => req('GET', `${BASE}/running`);
 export const createSale = data => req('POST', `${BASE}/sales`, data);
 export const updateSale = (id, data) => req('PATCH', `${BASE}/sales/${enc(id)}`, data);
 export const deleteSale = id => req('DELETE', `${BASE}/sales/${enc(id)}`);

@@ -2,6 +2,7 @@
   "docs": "https://github.com/dustinpoissant/kempo-discounts#readme",
   "git": "https://github.com/dustinpoissant/kempo-discounts",
   "public-scope": "discounts",
+  "public-scopes": { "sales": "public-sales" },
   "schema": "./server/db/schema.js",
   "dependencies": [
     "kempo-products",
@@ -12,6 +13,27 @@
     "kempo-commerce:order:paid": "./hooks/order-paid.js",
     "kempo-commerce:refund:issued": "./hooks/refund-issued.js"
   },
+  "page_widgets": [
+    {
+      "key": "sale-banner",
+      "title": "Sale banner",
+      "description": "The sales running now, as a banner: what each takes off and when it ends.",
+      "iconSrc": "/admin/extension/kempo-discounts/icons/discounts.svg",
+      "category": "marketing",
+      "category_title": "Marketing",
+      "keywords": ["sale", "banner", "discount", "promotion", "offer"],
+      "tag": "k-discounts-sale-banner-widget",
+      "page_component": "/discounts/components/SaleBanner.js",
+      "editor_component": "/admin/extension/kempo-discounts/components/sitebuilder/SaleBannerEditor.js",
+      "editor_tag": "k-discounts-sale-banner-editor",
+      "settings_component": "/admin/extension/kempo-discounts/components/sitebuilder/SaleBannerSettings.js",
+      "settings_tag": "k-discounts-sale-banner-settings",
+      "attributes": [
+        { "name": "sales", "type": "string", "label": "Sales", "hint": "The sales to show, chosen in the settings.", "default": "" },
+        { "name": "show-end", "type": "boolean", "label": "Show when it ends", "hint": "Adds the date the sale ends after the amount it takes off.", "default": false }
+      ]
+    }
+  ],
   "permissions": [
     {
       "name": "discounts:view",
